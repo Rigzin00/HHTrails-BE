@@ -47,3 +47,15 @@ export class InternalError extends AppError {
     super(500, message, false);
   }
 }
+
+export class NetworkError extends AppError {
+  constructor(message = 'Network connection failed. Please check your internet connection and try again.') {
+    super(503, message);
+  }
+}
+
+export class ServiceUnavailableError extends AppError {
+  constructor(message = 'Service temporarily unavailable') {
+    super(503, message);
+  }
+}
