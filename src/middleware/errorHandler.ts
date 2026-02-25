@@ -11,11 +11,6 @@ export const errorHandler = (
   res: Response,
   _next: NextFunction
 ): void => {
-  console.log('🔴 ERROR HANDLER WAS CALLED');
-  console.log('Error type:', error.constructor.name);
-  console.log('Error message:', error.message);
-  console.log('Is AppError?', error instanceof AppError);
-  
   // Check for network/timeout errors FIRST (even if wrapped in AppError)
   const errorMessage = (error.message || '').toLowerCase();
   const errorName = (error.name || '').toLowerCase();
@@ -48,7 +43,6 @@ export const errorHandler = (
 
   // Handle timeout errors FIRST
   if (isTimeout) {
-    console.log('✓ Detected as TIMEOUT error');
     const timeoutError = new ServiceUnavailableError(
       'Connection timed out. Please check your internet connection and try again.'
     );
@@ -58,7 +52,6 @@ export const errorHandler = (
 
   // Handle network errors SECOND
   if (isNetworkError) {
-    console.log('✓ Detected as NETWORK/FETCH error');
     const networkError = new ServiceUnavailableError(
       'Unable to connect to the service. Please check your internet connection and try again.'
     );
@@ -68,7 +61,6 @@ export const errorHandler = (
 
   // THEN check if it's a handled AppError
   if (error instanceof AppError) {
-    console.log('✓ Error is AppError type (after network checks)');
     sendError(res, error.statusCode, error.message);
     return;
   }
