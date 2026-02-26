@@ -35,19 +35,30 @@ export class AuthController {
         throw new AuthenticationError('Failed to create user');
       }
 
-      sendSuccess(
-        res,
-        {
-          user: {
-            id: data.user.id,
-            email: data.user.email,
-            fullName: data.user.user_metadata?.full_name,
-          },
-          session: data.session,
-          message: 'Please check your email to verify your account',
+      // Format response based on whether email verification is required
+      const response: any = {
+        user: {
+          id: data.user.id,
+          email: data.user.email,
+          fullName: data.user.user_metadata?.full_name,
         },
-        201
-      );
+      };
+
+      // If session exists (no email verification required), format it consistently
+      if (data.session) {
+        response.session = {
+          accessToken: data.session.access_token,
+          refreshToken: data.session.refresh_token,
+          expiresIn: data.session.expires_in,
+          expiresAt: data.session.expires_at,
+        };
+      } else {
+        // No session means email verification is required
+        response.message = 'Please check your email to verify your account';
+        response.requiresEmailVerification = true;
+      }
+
+      sendSuccess(res, response, 201);
     } catch (error) {
       next(error);
     }

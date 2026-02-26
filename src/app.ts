@@ -22,13 +22,24 @@ app.use(
       // Allow requests with no origin (mobile apps, Postman, etc.)
       if (!origin) return callback(null, true);
       
+      // In development, allow all localhost origins
+      if (env.NODE_ENV === 'development' && origin.includes('localhost')) {
+        return callback(null, true);
+      }
+      
       if (allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
+        console.error(`CORS blocked origin: ${origin}`);
+        console.error(`Allowed origins: ${allowedOrigins.join(', ')}`);
         callback(new Error('Not allowed by CORS'));
       }
     },
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Admin-Key'],
+    exposedHeaders: ['Content-Range', 'X-Content-Range'],
+    maxAge: 86400, // 24 hours
   })
 );
 
@@ -51,6 +62,12 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 if (env.NODE_ENV !== 'test') {
   app.use(morgan(env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 }
+
+// Request logging for debugging
+app.use((req: Request, _res: Response, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
+  next();
+});
 
 // API routes
 app.use('/api', routes);
@@ -79,7 +96,7 @@ app.use('*', (_req: Request, res: Response) => {
   });
 });
 
-// Error handling middleware (must be last)
+// Error handling middleware (MUST be last)
 app.use(errorHandler);
 
 export default app;
