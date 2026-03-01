@@ -13,14 +13,8 @@ http://localhost:3000/api/v1/tours
 ## Authentication
 
 ### Admin Routes
-Admin routes require an admin secret key to be passed in one of two ways:
+Admin routes require an admin secret key passed as a custom header:
 
-**Option 1: Authorization Header**
-```
-Authorization: Bearer your-super-secret-admin-key-change-this-in-production
-```
-
-**Option 2: Custom Header**
 ```
 x-admin-key: your-super-secret-admin-key-change-this-in-production
 ```
@@ -136,7 +130,7 @@ Create a new tour package.
 
 **Headers:**
 ```
-Authorization: Bearer your-admin-secret-key
+x-admin-key: your-admin-secret-key
 Content-Type: application/json
 ```
 
@@ -169,7 +163,7 @@ Content-Type: application/json
 **Example Request:**
 ```bash
 curl -X POST http://localhost:3000/api/v1/tours \
-  -H "Authorization: Bearer your-admin-secret-key" \
+  -H "x-admin-key: your-admin-secret-key" \
   -H "Content-Type: application/json" \
   -d '{
     "title": "Himalayan Adventure",
@@ -227,7 +221,7 @@ Update an existing tour. All fields are optional, but at least one must be provi
 
 **Headers:**
 ```
-Authorization: Bearer your-admin-secret-key
+x-admin-key: your-admin-secret-key
 Content-Type: application/json
 ```
 
@@ -242,7 +236,7 @@ Content-Type: application/json
 **Example Request:**
 ```bash
 curl -X PUT http://localhost:3000/api/v1/tours/123e4567-e89b-12d3-a456-426614174000 \
-  -H "Authorization: Bearer your-admin-secret-key" \
+  -H "x-admin-key: your-admin-secret-key" \
   -H "Content-Type: application/json" \
   -d '{"title": "Updated Himalayan Adventure", "durationDays": 8}'
 ```
@@ -290,13 +284,13 @@ Delete a tour.
 
 **Headers:**
 ```
-Authorization: Bearer your-admin-secret-key
+x-admin-key: your-admin-secret-key
 ```
 
 **Example Request:**
 ```bash
 curl -X DELETE http://localhost:3000/api/v1/tours/123e4567-e89b-12d3-a456-426614174000 \
-  -H "Authorization: Bearer your-admin-secret-key"
+  -H "x-admin-key: your-admin-secret-key"
 ```
 
 **Response (200):**
@@ -353,11 +347,11 @@ const { data } = await response.json();
 console.log(data.tours);
 
 // Create tour (admin)
-const adminKey = 'your-admin-secret-key';
+const adminKey = process.env.NEXT_PUBLIC_ADMIN_KEY;
 const response = await fetch('http://localhost:3000/api/v1/tours', {
   method: 'POST',
   headers: {
-    'Authorization': `Bearer ${adminKey}`,
+    'x-admin-key': adminKey,
     'Content-Type': 'application/json'
   },
   body: JSON.stringify({
