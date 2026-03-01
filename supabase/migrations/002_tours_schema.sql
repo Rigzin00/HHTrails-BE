@@ -12,6 +12,7 @@ create table if not exists public.tours (
   is_custom boolean null default false,
   created_at timestamp with time zone not null default now(),
   updated_at timestamp with time zone not null default now(),
+  is_description_filled boolean not null default false,
   constraint tours_pkey primary key (id),
   constraint tours_duration_days_check check ((duration_days > 0)),
   constraint tours_duration_nights_check check ((duration_nights >= 0))
