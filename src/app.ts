@@ -78,10 +78,15 @@ app.get('/', (_req: Request, res: Response) => {
     message: 'HHTrails API',
     version: '1.0.0',
     status: 'running',
-    documentation: '/api/v1/docs',
+    documentation: {
+      v1: '/api/v1/docs'
+    },
     endpoints: {
       health: '/api/health',
+      home: '/api/v1/home',
       auth: '/api/v1/auth',
+      tours: '/api/v1/tours',
+      blogs: '/api/v1/blogs',
     },
   });
 });
